@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medebir/provider/current_user.dart';
+import 'package:medebir/screens/home_screen.dart';
+import 'package:medebir/screens/phone_otp_verify_screen.dart';
+import 'package:provider/provider.dart';
 
 class PhoneSignUpScreen extends StatefulWidget {
   @override
@@ -31,14 +35,13 @@ class _PhoneSignUpScreenState extends State<PhoneSignUpScreen> {
               SizedBox(height: 5.0),
               TextField(
                 controller: _phoneController,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.name,
                 style: TextStyle(fontSize: 20.0),
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey[600],
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 10.0),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
@@ -53,7 +56,18 @@ class _PhoneSignUpScreenState extends State<PhoneSignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      CurrentUser _currentUser = Provider.of<CurrentUser>(context, listen: false);
+                      //
+                      String _resultString = await _currentUser.verifyPhone(_phoneController.text.trim().toString());
+                      if (_resultString == "success") {
+                        Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (context) => HomeScreen()), (route) => false);
+                      } else if (_resultString == "error") {
+                        Navigator.of(context)
+                            .pushAndRemoveUntil(CupertinoPageRoute(builder: (context) => PhoneVerificationScreen()), (route) => false);
+                      }
+                      //
+                    },
                     height: 45.0,
                     minWidth: 150.0,
                     color: Colors.grey,
